@@ -1,5 +1,6 @@
 require("dotenv").config({ silent: true });
 const express = require("express");
+const login_auth_target = process.env.AUTH_TARGET || "_self";
 const oauth_provider = process.env.OAUTH_PROVIDER || "github";
 const port = process.env.PORT || 5000;
 
