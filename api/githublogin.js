@@ -1,7 +1,6 @@
 const simpleOauthModule = require("simple-oauth2");
 const randomstring = require("randomstring");
 const oauth_provider = process.env.OAUTH_PROVIDER || "github";
-const login_auth_target = process.env.AUTH_TARGET || "_self";
 
 const oauth2 = simpleOauthModule.create({
   client: {
