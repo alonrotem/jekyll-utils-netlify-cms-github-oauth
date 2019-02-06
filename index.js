@@ -1,3 +1,4 @@
+console.clear();
 require("dotenv").config({ silent: true });
 const express = require("express");
 const login_auth_target = process.env.AUTH_TARGET || "_self";
@@ -17,7 +18,8 @@ app.get("/", (req, res) => {
 });
 
 require("./api/githublogin")(app);
-require("./api/jekyll-archives")(app);
+//require("./api/jekyll-archives")(app);
+require("./api/analytics")(app);
 
 app.listen(port, () => {
   console.log("gandalf is walkin' on port " + port);
