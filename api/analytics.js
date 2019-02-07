@@ -90,7 +90,7 @@ module.exports = function(app) {
       })
       .catch(function(err) {
         res.json({
-          error: err
+          error: err.toString()
         });
       });
   });
