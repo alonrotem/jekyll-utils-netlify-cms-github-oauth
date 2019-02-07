@@ -4,7 +4,7 @@ const login_auth_target = process.env.AUTH_TARGET || "_self";
 const oauth_provider = process.env.OAUTH_PROVIDER || "github";
 const port = process.env.PORT || 5000;
 const bodyParser = require("body-parser");
-
+const cors = require("cors");
 const app = express();
 
 app.use(function(req, res, next) {
@@ -15,6 +15,7 @@ app.use(function(req, res, next) {
   );
   next();
 });
+app.options("*", cors());
 
 app.use(
   bodyParser.urlencoded({
