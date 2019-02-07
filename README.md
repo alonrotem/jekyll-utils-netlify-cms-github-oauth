@@ -1,6 +1,21 @@
-# Netlify-cms-github-oauth-provider
+# Jekyll Utils and Netlify CMS GitHub Oauth Provider
 
-***External authentication providers were enabled in netlify-cms version 0.4.3. Check your web console to see your netlify-cms version.***
+_This is a fork of [vencax/netlify-cms-github-oauth-provider](https://github.com/vencax/netlify-cms-github-oauth-provider), with additional features implemented, for Jekyll projects which are hosted on GitHubPages._
+
+## Features
+
+Forked from the original repository:
+
+- GitHub OAuth provider for Netlify CMS
+
+Newly added features:
+
+- Automatic generation of archive (e.g. categories, tags) pages
+- Pageviews proxy from Google Analytics
+
+## GitHub
+
+**_External authentication providers were enabled in netlify-cms version 0.4.3. Check your web console to see your netlify-cms version._**
 
 [netlify-cms](https://www.netlifycms.org/) has its own github OAuth client. This implementation was created by reverse engineering the results of that client, so it's not necessary to reimplement client part of [netlify-cms](https://www.netlifycms.org/).
 
@@ -25,7 +40,7 @@ Information is available on the [Github Developer Documentation](https://develop
 
 ### Auth Provider Config
 
-Configuration is done with environment variables, which can be supplied as command line arguments, added in your app  hosting interface, or loaded from a .env ([dotenv](https://github.com/motdotla/dotenv)) file.
+Configuration is done with environment variables, which can be supplied as command line arguments, added in your app hosting interface, or loaded from a .env ([dotenv](https://github.com/motdotla/dotenv)) file.
 
 **Example .env file:**
 
@@ -38,6 +53,7 @@ GIT_HOSTNAME=https://github.website.com
 ```
 
 For Gitlab you also have to provide this environment variables:
+
 ```
 OAUTH_PROVIDER=gitlab
 SCOPES=api
@@ -45,23 +61,23 @@ OAUTH_AUTHORIZE_PATH=/oauth/authorize
 OAUTH_TOKEN_PATH=/oauth/token
 ```
 
-You can also setup an environment variable to configure "_blank" target when auth window is opened. Default is "_self".
+You can also setup an environment variable to configure "\_blank" target when auth window is opened. Default is "\_self".
+
 ```
 AUTH_TARGET=_blank
 ```
-
-
 
 **Client ID & Client Secret:**
 After registering your Oauth app, you will be able to get your client id and client secret on the next page.
 
 **Redirect URL (optional in github, mandatory in gitlab):**
-Include this if you  need your callback to be different from what is supplied in your Oauth app configuration.
+Include this if you need your callback to be different from what is supplied in your Oauth app configuration.
 
 **Git Hostname (Default github.com):**
 This is only necessary for use with Github Enterprise or Gitlab.
 
 ### CMS Config
+
 You also need to add `base_url` to the backend section of your netlify-cms's config file. `base_url` is the live URL of this repo with no trailing slashes.
 
 ```
