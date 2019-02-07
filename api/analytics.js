@@ -2,6 +2,7 @@
 //https://console.developers.google.com/apis/credentials?project=literaturnirazgovori
 //https://github.com/googleapis/google-api-nodejs-client/blob/master/samples/analyticsReporting/batchGet.js
 //https://developers.google.com/analytics/devguides/reporting/core/dimsmets#view=detail&group=page_tracking
+require("dotenv").config();
 const { google } = require("googleapis");
 const url = require("url");
 const scopes = "https://www.googleapis.com/auth/analytics.readonly";
@@ -63,7 +64,7 @@ module.exports = function(app) {
                   filters: [
                     {
                       dimensionName: "ga:pagePath",
-                      operator: "EXACT",
+                      operator: "REGEXP",
                       expressions: [page]
                     }
                   ]
@@ -77,10 +78,19 @@ module.exports = function(app) {
       .then(function(result) {
         res.header("Content-Type", "application/json; charset=utf-8");
         if (result.data.reports[0].data.rows) {
+          let pviews = 0;
+          for (let i = 0; i < result.data.reports[0].data.rows.length; i++) {
+            if (result.data.reports[0].data.rows[i].metrics[0].values[0]) {
+              let npviews = parseInt(
+                result.data.reports[0].data.rows[i].metrics[0].values[0]
+              );
+              if (!isNaN(npviews)) pviews += npviews;
+            }
+          }
           res.json({
             error: "",
             page: result.data.reports[0].data.rows[0].dimensions[0],
-            views: result.data.reports[0].data.rows[0].metrics[0].values[0]
+            views: pviews
           });
         } else {
           res.json({
