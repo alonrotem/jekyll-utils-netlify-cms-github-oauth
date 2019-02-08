@@ -41,6 +41,7 @@ app.get("/", (req, res) => {
 require("./api/githublogin")(app);
 //require("./api/jekyll-archives")(app);
 require("./api/analytics")(app);
+require("./api/github-jekyll")(app);
 
 app.listen(port, () => {
   console.log("gandalf is walkin' on port " + port);
