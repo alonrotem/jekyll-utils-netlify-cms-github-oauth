@@ -95,6 +95,14 @@ module.exports = function(app) {
             simpleGit.addConfig("core.quotepath", "off");
             return keeprunning;
           })
+          .then(keeprunning => {
+            simpleGit.raw(["config", "user.email", "alrotem@gmail.com"]);
+            return keeprunning;
+          })
+          .then(keeprunning => {
+            simpleGit.raw(["config", "user.name", "Alon Rotem"]);
+            return keeprunning;
+          })
           //step 4: get the diff files from the latest commit (HEAD) and the previous one (HEAD~1).
           //filter out (a)dded, (c)opied, (d)eleted, (r)enamed, (t)ype-changed, (u)nmerged or (x)-unknown changes.
           //this leaves only content-(m)odified files.
