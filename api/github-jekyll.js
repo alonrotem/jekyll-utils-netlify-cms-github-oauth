@@ -204,6 +204,7 @@ module.exports = function(app) {
                         .tz(process.env.USER_TIMEZONE)
                         .toDate()
                     : new Date();
+
                   let nowtring =
                     now.getFullYear() +
                     "-" +
@@ -215,7 +216,14 @@ module.exports = function(app) {
                     "-" +
                     ("0" + now.getMinutes()).slice(-2) +
                     "-";
-
+                  console.log(
+                    "Timezone set to: " +
+                      process.env.USER_TIMEZONE +
+                      ". New file time: " +
+                      now +
+                      ". String: " +
+                      nowtring
+                  );
                   //break the filename and the path, regex the name and replace the datetime
                   let filepath = "";
                   let filename = currentfileinfo[r].filename;
