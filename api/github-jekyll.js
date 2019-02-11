@@ -200,22 +200,21 @@ module.exports = function(app) {
                   !currentfileinfo[r].hiddenOnLastCommit
                 ) {
                   let now = process.env.USER_TIMEZONE
-                    ? moment()
-                        .tz(process.env.USER_TIMEZONE)
-                        .toDate()
-                    : new Date();
+                    ? moment().tz(process.env.USER_TIMEZONE)
+                    : moment();
 
                   let nowtring =
-                    now.getFullYear() +
+                    now.year() +
                     "-" +
-                    ("0" + (now.getMonth() + 1)).slice(-2) +
+                    ("0" + (now.month() + 1)).slice(-2) +
                     "-" +
-                    ("0" + now.getDate()).slice(-2) +
+                    ("0" + now.date()).slice(-2) +
                     "-" +
-                    ("0" + now.getHours()).slice(-2) +
+                    ("0" + now.hour()).slice(-2) +
                     "-" +
-                    ("0" + now.getMinutes()).slice(-2) +
+                    ("0" + now.minute()).slice(-2) +
                     "-";
+
                   console.log(
                     "Timezone set to: " +
                       process.env.USER_TIMEZONE +
