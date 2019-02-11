@@ -3,18 +3,32 @@ const fs = require("fs-extra");
 const path = require("path");
 const parser = require("parse-diff");
 const utf8 = require("utf8");
-var frontmatter = require("front-matter");
+const frontmatter = require("front-matter");
 const githubsecurity = require("./github-security");
+const moment = require("moment-timezone");
 
 module.exports = function(app) {
   app.post(
     "/api/github-jekyll/fixunhiddendate",
-    githubsecurity.verifyPostData,
+    //githubsecurity.verifyPostData,
     (req, res) => {
       res.set({ "content-type": "application/json; charset=utf-8" });
 
       let automatedScriptCommitMessage =
         process.env.JEKYLL_FIX_UNHIDDEN_COMMIT_MESSAGE;
+      let gitUrl = process.env.JEKYLL_GIT_REPO;
+      let usernamepassregex = /http[s]{0,1}\:\/\/(.*\@).*/g;
+      if (!usernamepassregex.exec(gitUrl)) {
+        if (process.env.JEKYLL_GIT_USERNAME && process.env.JEKYLL_GIT_PASS) {
+          gitUrl =
+            gitUrl.substring(0, gitUrl.indexOf("//") + 2) +
+            process.env.JEKYLL_GIT_USERNAME +
+            ":" +
+            process.env.JEKYLL_GIT_PASS +
+            "@" +
+            gitUrl.substring(gitUrl.indexOf("//") + 2);
+        }
+      }
 
       const localPath = path.join(__dirname, "tmp");
       let currentfileinfo = [];
@@ -39,7 +53,7 @@ module.exports = function(app) {
       //step 1: clone
       return (
         simpleGit
-          .clone(process.env.JEKYLL_GIT_REPO, localPath)
+          .clone(gitUrl, localPath)
           .catch(err => {
             console.log(err);
             let returnobj = JSON.stringify(
@@ -102,6 +116,11 @@ module.exports = function(app) {
               process.env.JEKYLL_GIT_EMAIL
             ]);
             successResponse.committerEmail = process.env.JEKYLL_GIT_EMAIL;
+            return keeprunning;
+          })
+          .then(keeprunning => {
+            simpleGit.raw(["config", "user.name", process.env.JEKYLL_GIT_USER]);
+            successResponse.committerUser = process.env.JEKYLL_GIT_USER;
             return keeprunning;
           })
           .then(keeprunning => {
@@ -180,7 +199,11 @@ module.exports = function(app) {
                   isHiddenOnPreviousCommit &&
                   !currentfileinfo[r].hiddenOnLastCommit
                 ) {
-                  let now = new Date();
+                  let now = process.env.USER_TIMEZONE
+                    ? moment()
+                        .tz(process.env.USER_TIMEZONE)
+                        .toDate()
+                    : new Date();
                   let nowtring =
                     now.getFullYear() +
                     "-" +
