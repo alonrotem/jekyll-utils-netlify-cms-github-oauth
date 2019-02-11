@@ -92,11 +92,8 @@ module.exports = function(app) {
           })
           //step 3: set the repo configuration, to prevent weird octet-encoded file names
           .then(keeprunning => {
-            if (keeprunning) {
-              return simpleGit.addConfig("core.quotepath", "off");
-            } else {
-              return false;
-            }
+            simpleGit.addConfig("core.quotepath", "off");
+            return keeprunning;
           })
           //step 4: get the diff files from the latest commit (HEAD) and the previous one (HEAD~1).
           //filter out (a)dded, (c)opied, (d)eleted, (r)enamed, (t)ype-changed, (u)nmerged or (x)-unknown changes.
@@ -115,9 +112,14 @@ module.exports = function(app) {
           })
           .then(result => {
             if (result) {
-              let files = result.split("\n");
+              let files = result.trim().split("\n");
               if (files) {
                 successResponse.modifiedFiles = files.length;
+                console.log(
+                  "Found " +
+                    files.length +
+                    " modified file(s) in the latest commit."
+                );
                 for (let i = 0; i < files.length; i++) {
                   let file = files[i].replace(/\"*/g, "");
                   if (file) {
@@ -153,6 +155,7 @@ module.exports = function(app) {
           })
           //step 5: check the modified files in their previous version, their frontmatter, and their hidden status
           .then(results => {
+            successResponse.changedfiles = [];
             if (results) {
               for (let r = 0; r < results.length; r++) {
                 let previousversion = results[r];
@@ -163,7 +166,6 @@ module.exports = function(app) {
                   isHiddenOnPreviousCommit &&
                   !currentfileinfo[r].hiddenOnLastCommit
                 ) {
-                  successResponse.changedfiles = [];
                   let now = new Date();
                   let nowtring =
                     now.getFullYear() +
@@ -179,7 +181,7 @@ module.exports = function(app) {
 
                   //break the filename and the path, regex the name and replace the datetime
                   let filepath = "";
-                  let filename = currentfileinfo[r];
+                  let filename = currentfileinfo[r].filename;
                   let pathSeparator = currentfileinfo[r].filename.lastIndexOf(
                     "/"
                   );
