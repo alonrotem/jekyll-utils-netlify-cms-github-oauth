@@ -1,4 +1,5 @@
 require("dotenv").config();
+const crypto = require("crypto");
 
 module.exports = function() {
   verifyPostData: (req, res, next) => {
