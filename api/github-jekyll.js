@@ -6,8 +6,28 @@ const utf8 = require("utf8");
 var frontmatter = require("front-matter");
 
 module.exports = function(app) {
-  app.psot("/api/github-jekyll/fixunhiddendate", (req, res) => {
+  app.post("/api/github-jekyll/fixunhiddendate", (req, res) => {
     res.set({ "content-type": "application/json; charset=utf-8" });
+
+    let githubsecret = req.headers["x-hub-signature"];
+    if (githubsecret != process.env.JEKYLL_GITHUB_WEBHOOK_SECRET) {
+      let webhookmessage =
+        'GitHub webhook received: "' +
+        req.headers["x-hub-signature"] +
+        '". Not matching expected secret header.';
+      let returnobj = JSON.stringify(
+        {
+          error: true,
+          errrmessage: webhookmessage
+        },
+        null,
+        4
+      );
+      console.log(returnobj);
+      res.send(returnobj);
+      res.end();
+      return;
+    }
 
     let automatedScriptCommitMessage =
       process.env.JEKYLL_FIX_UNHIDDEN_COMMIT_MESSAGE;
