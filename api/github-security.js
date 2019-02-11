@@ -2,6 +2,7 @@ require("dotenv").config();
 const crypto = require("crypto");
 
 module.exports = {
+  //This middleware checks GitHub's "x-hub-signature" header, to see if it matches the secret key
   verifyPostData: (req, res, next) => {
     const payload = JSON.stringify(req.body);
     const headerKey = "x-hub-signature";
