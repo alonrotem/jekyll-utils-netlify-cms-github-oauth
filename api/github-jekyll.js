@@ -1,4 +1,4 @@
-require("dotenv").config();
+require("dotenv").config({ silent: true });
 const fs = require("fs-extra");
 const path = require("path");
 const parser = require("parse-diff");

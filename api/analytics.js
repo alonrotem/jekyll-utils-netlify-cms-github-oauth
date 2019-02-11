@@ -2,7 +2,7 @@
 //https://console.developers.google.com/apis/credentials?project=literaturnirazgovori
 //https://github.com/googleapis/google-api-nodejs-client/blob/master/samples/analyticsReporting/batchGet.js
 //https://developers.google.com/analytics/devguides/reporting/core/dimsmets#view=detail&group=page_tracking
-require("dotenv").config();
+require("dotenv").config({ silent: true });
 const { google } = require("googleapis");
 const url = require("url");
 const scopes = "https://www.googleapis.com/auth/analytics.readonly";
