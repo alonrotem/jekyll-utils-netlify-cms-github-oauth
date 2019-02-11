@@ -96,11 +96,17 @@ module.exports = function(app) {
             return keeprunning;
           })
           .then(keeprunning => {
-            simpleGit.raw(["config", "user.email", "alrotem@gmail.com"]);
+            simpleGit.raw([
+              "config",
+              "user.email",
+              process.env.JEKYLL_GIT_EMAIL
+            ]);
+            successResponse.committerEmail = process.env.JEKYLL_GIT_EMAIL;
             return keeprunning;
           })
           .then(keeprunning => {
-            simpleGit.raw(["config", "user.name", "Alon Rotem"]);
+            simpleGit.raw(["config", "user.name", process.env.JEKYLL_GIT_USER]);
+            successResponse.committerUser = process.env.JEKYLL_GIT_USER;
             return keeprunning;
           })
           //step 4: get the diff files from the latest commit (HEAD) and the previous one (HEAD~1).
@@ -248,18 +254,6 @@ module.exports = function(app) {
               successResponse.pushed = true;
             }
             return keeprunning;
-          })
-          .then(() => {
-            return simpleGit.raw(["config", "user.name"]);
-          })
-          .then(username => {
-            successResponse.committerUser = username;
-          })
-          .then(() => {
-            return simpleGit.raw(["config", "user.email"]);
-          })
-          .then(email => {
-            successResponse.committerEmail = email;
           })
           .then(() => {
             let returnobj = JSON.stringify(successResponse, null, 4);
