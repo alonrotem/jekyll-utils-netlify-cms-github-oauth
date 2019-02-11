@@ -9,7 +9,7 @@ const githubsecurity = require("./github-security");
 module.exports = function(app) {
   app.post(
     "/api/github-jekyll/fixunhiddendate",
-    //githubsecurity.verifyPostData,
+    githubsecurity.verifyPostData,
     (req, res) => {
       res.set({ "content-type": "application/json; charset=utf-8" });
 

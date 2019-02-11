@@ -1,9 +1,10 @@
 require("dotenv").config();
 const crypto = require("crypto");
 
-module.exports = function() {
+module.exports = {
   verifyPostData: (req, res, next) => {
     const payload = JSON.stringify(req.body);
+    const headerKey = "x-hub-signature";
     if (!payload) {
       return next("Request body empty");
     }
@@ -20,5 +21,5 @@ module.exports = function() {
       );
     }
     return next();
-  };
+  }
 };
