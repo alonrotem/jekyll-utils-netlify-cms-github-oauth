@@ -29,7 +29,7 @@ Other implementations in: [Go lang](https://github.com/igk1972/netlify-cms-oauth
 
 The OAuth provider code was refactored to an external file. Additional APIs are managed separately under the `/api` folder.
 
-## Newly added feature: Pageviews proxy from Google Analytics
+#### Newly added feature: Pageviews proxy from Google Analytics
 
 Adding an integration to Google Analytics is easy, and the data collected there is, of course, extremely invaluable (also for Google...). However, in order to publicly share information from Google Analytics, you need a proxy, which would fetch the information on the server (with the right authentication).
 
@@ -40,7 +40,7 @@ This feature uses [Google Analytics Reporting API v4](https://developers.google.
 
 Note that Google Analytics version 4 does support pure JavaScript client (see [official sample](https://developers.google.com/analytics/devguides/reporting/core/v4/quickstart/web-js)), but it requires actively logging in, and does not allow proxying your data publicly.
 
-## Newly added feature: automatic date-naming of posts when they are unhidden
+#### Newly added feature: automatic date-naming of posts when they are unhidden
 
 If you run a Jekyll content site, you may want to pre-write posts, for later publishing. Posts (and other content items) are, by default, ordered by date, which is part of their name, and their URL.
 
