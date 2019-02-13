@@ -280,7 +280,7 @@ module.exports = function(app) {
           })
           .then(keeprunning => {
             if (keeprunning) {
-              simpleGit.push("origin", "master");
+              simpleGit.push("origin", "work");
               successResponse.pushed = true;
             }
             return keeprunning;
