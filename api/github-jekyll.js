@@ -1,16 +1,15 @@
 require("dotenv").config({ silent: true });
 const fs = require("fs-extra");
 const path = require("path");
-const parser = require("parse-diff");
-const utf8 = require("utf8");
 const frontmatter = require("front-matter");
 const githubsecurity = require("./github-security");
 const moment = require("moment-timezone");
+const jsyaml = require("js-yaml");
 
 module.exports = function(app) {
   app.post(
     "/api/github-jekyll/fixunhiddendate",
-    //githubsecurity.verifyPostData,
+    githubsecurity.validateGitHubWebhookSecret,
     (req, res) => {
       res.set({ "content-type": "application/json; charset=utf-8" });
 
@@ -30,11 +29,12 @@ module.exports = function(app) {
         }
       }
       const targetBranch = process.env.JEKYLL_GIT_BRANCH
-        ? JEKYLL_GIT_BRANCH
+        ? process.env.JEKYLL_GIT_BRANCH
         : "master";
       const localPath = path.join(__dirname, "tmp");
       let currentfileinfo = [];
       let previousFileVersionsPromises = [];
+      let gitMvRenamedFilesPromises = [];
       let successResponse = {
         added: false,
         commitmessage: "",
@@ -56,9 +56,9 @@ module.exports = function(app) {
       return (
         simpleGit
           .clone(gitUrl, localPath, [
-            "--single-branch",
+            "--single-branch" /*,
             "--branch ",
-            targetBranch
+            targetBranch*/
           ])
           .catch(err => {
             console.log(err);
@@ -252,6 +252,48 @@ module.exports = function(app) {
                     localPath,
                     filepath + filename.replace(/^[\d\-]*/g, nowtring)
                   );
+                  //-------------------------
+                  let oldfilecontent = fs.readFileSync(oldfilename).toString();
+                  let oldfileFrontmatter = frontmatter(oldfilecontent)
+                    .attributes;
+                  let oldfileUrl =
+                    "/" +
+                    path.relative(localPath, oldfilename).replace("\\", "/");
+                  oldfileUrl = oldfileUrl
+                    .replace("_posts", oldfileFrontmatter.category)
+                    .replace(
+                      /(^\/[^\/]*\/\d{4})\-(\d{2})\-(\d{2})-(.*)\..*/,
+                      "$1/$2/$3/$4"
+                    );
+                  let addedNewUrl = false;
+                  let redirectfrom = oldfileFrontmatter["redirect_from"];
+                  if (redirectfrom) {
+                    if (Array.isArray(redirectfrom)) {
+                      if (!redirectfrom.includes(oldfileUrl)) {
+                        redirectfrom.push(oldfileUrl);
+                        addedNewUrl = true;
+                      }
+                    } else {
+                      redirectfrom = [redirectfrom, oldfileUrl];
+                      addedNewUrl = true;
+                    }
+                  } else {
+                    redirectfrom = [oldfileUrl];
+                    addedNewUrl = true;
+                  }
+                  if (addedNewUrl) {
+                    oldfileFrontmatter["redirect_from"] = redirectfrom;
+                    let updatedFrontmatter = jsyaml.safeDump(
+                      oldfileFrontmatter
+                    );
+                    let updatedContent = oldfilecontent.replace(
+                      /(^\-{3,}[\r\n]*)[\S\s]*([\n\r]*\-{3,})/,
+                      "$1" + updatedFrontmatter + "$2"
+                    );
+                    //change the url to /yyyy/mm/dd/hh/mm....
+                    fs.writeFileSync(oldfilename, updatedContent);
+                  }
+                  //-------------------------
                   if (!fs.existsSync(newfilename)) {
                     fs.renameSync(oldfilename, newfilename);
                     successResponse.changedfiles.push({
@@ -259,11 +301,23 @@ module.exports = function(app) {
                       newname: newfilename
                     });
                   }
+                  gitMvRenamedFilesPromises.push(
+                    simpleGit.raw(["rm", "--cached", oldfilename])
+                  );
+                  gitMvRenamedFilesPromises.push(simpleGit.add(newfilename));
+                  /* replace front matter
+                  previousversion.replace(/(^\-{3,}\n)[\S\s]*(\n\-{3,})/, "$1OK$2")
+                  */
                 }
               }
-              return true;
+            }
+          })
+          .then(() => {
+            let fileschanged = gitMvRenamedFilesPromises.length > 0;
+            if (fileschanged) {
+              return Promise.all(gitMvRenamedFilesPromises);
             } else {
-              return false;
+              return fileschanged;
             }
           })
           .then(keeprunning => {
