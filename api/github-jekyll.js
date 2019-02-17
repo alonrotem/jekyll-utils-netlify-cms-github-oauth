@@ -29,7 +29,9 @@ module.exports = function(app) {
             gitUrl.substring(gitUrl.indexOf("//") + 2);
         }
       }
-
+      const targetBranch = process.env.JEKYLL_GIT_BRANCH
+        ? JEKYLL_GIT_BRANCH
+        : "master";
       const localPath = path.join(__dirname, "tmp");
       let currentfileinfo = [];
       let previousFileVersionsPromises = [];
@@ -53,7 +55,11 @@ module.exports = function(app) {
       //step 1: clone
       return (
         simpleGit
-          .clone(gitUrl, localPath)
+          .clone(gitUrl, localPath, [
+            "--single-branch",
+            "--branch ",
+            targetBranch
+          ])
           .catch(err => {
             console.log(err);
             let returnobj = JSON.stringify(
@@ -280,7 +286,7 @@ module.exports = function(app) {
           })
           .then(keeprunning => {
             if (keeprunning) {
-              simpleGit.push("origin", "master");
+              simpleGit.push("origin", targetBranch);
               successResponse.pushed = true;
             }
             return keeprunning;
