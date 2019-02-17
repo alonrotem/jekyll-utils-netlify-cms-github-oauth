@@ -286,7 +286,11 @@ module.exports = function(app) {
           })
           .then(keeprunning => {
             if (keeprunning) {
+<<<<<<< HEAD
               simpleGit.push("origin", targetBranch);
+=======
+              simpleGit.push("origin", "work");
+>>>>>>> 29dfba2b5d23e083960ded7ff0dce9776eb92e8f
               successResponse.pushed = true;
             }
             return keeprunning;

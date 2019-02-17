@@ -1,6 +1,24 @@
 # Jekyll Utils and Netlify CMS GitHub Oauth Provider
 
 _This is a fork of [vencax/netlify-cms-github-oauth-provider](https://github.com/vencax/netlify-cms-github-oauth-provider), with additional features implemented, for Jekyll projects which are hosted on GitHubPages._
+<<<<<<< HEAD
+=======
+
+## Features
+
+Forked from the original repository:
+
+- GitHub OAuth provider for Netlify CMS
+
+Newly added features:
+
+- Automatic generation of archive (e.g. categories, tags) pages
+- Pageviews proxy from Google Analytics
+
+## GitHub
+
+**_External authentication providers were enabled in netlify-cms version 0.4.3. Check your web console to see your netlify-cms version._**
+>>>>>>> 29dfba2b5d23e083960ded7ff0dce9776eb92e8f
 
 ## Features
 
