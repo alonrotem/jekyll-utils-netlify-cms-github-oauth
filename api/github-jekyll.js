@@ -265,6 +265,7 @@ module.exports = function(app) {
                       /(^\/[^\/]*\/\d{4})\-(\d{2})\-(\d{2})-(.*)\..*/,
                       "$1/$2/$3/$4"
                     );
+                  console.log("Redirect from old url: " + oldfileUrl);
                   let addedNewUrl = false;
                   let redirectfrom = oldfileFrontmatter["redirect_from"];
                   if (redirectfrom) {
@@ -314,12 +315,20 @@ module.exports = function(app) {
           })
           .then(() => {
             let fileschanged = gitMvRenamedFilesPromises.length > 0;
+            console.log(
+              "Files changed:" +
+                fileschanged +
+                ", Promises (remove/add) to perform: " +
+                gitMvRenamedFilesPromises.length
+            );
             if (fileschanged) {
+              console.log("Awaiting promises...");
               return Promise.all(gitMvRenamedFilesPromises);
             } else {
               return fileschanged;
             }
           })
+          /*
           .then(keeprunning => {
             fileschanged =
               successResponse.changedfiles &&
@@ -330,6 +339,7 @@ module.exports = function(app) {
             }
             return keeprunning && fileschanged;
           })
+          */
           .then(keeprunning => {
             if (keeprunning) {
               simpleGit.commit(automatedScriptCommitMessage);
