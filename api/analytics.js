@@ -8,7 +8,7 @@ const url = require("url");
 const scopes = "https://www.googleapis.com/auth/analytics.readonly";
 
 module.exports = function(app) {
-  app.post("/api/ganalytics/pagevies", (req, res) => {
+  app.post("/api/ganalytics/pagevies", async (req, res) => {
     let tomorrow = new Date();
     tomorrow.setDate(new Date().getDate() + 1);
     let tomorrowDateString =
@@ -40,8 +40,9 @@ module.exports = function(app) {
       version: "v4",
       auth: jwtoken
     });
-    analyticsreporting.reports
-      .batchGet({
+    try
+    {
+    let result = await analyticsreporting.reports.batchGet({
         requestBody: {
           reportRequests: [
             {
@@ -74,8 +75,7 @@ module.exports = function(app) {
             }
           ]
         }
-      })
-      .then(function(result) {
+      });
         res.header("Content-Type", "application/json; charset=utf-8");
         if (result.data.reports[0].data.rows) {
           let pviews = 0;
@@ -97,11 +97,11 @@ module.exports = function(app) {
             error: "No resuls for page " + page
           });
         }
-      })
-      .catch(function(err) {
+      }
+      catch(err){
         res.json({
           error: err.toString()
-        });
-      });
+        }); 
+      }
   });
 };
